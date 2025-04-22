@@ -15,7 +15,7 @@ const Advisor = () => {
         <div>
           <h2 className="text-2xl font-bold mb-1">AI Financial Advisor</h2>
           <p className="text-gray-500">
-            Get personalized insights and advice about your finances (Powered by Google Gemini)
+            Get personalized insights and advice about your finances (Powered by Google Gemini 1.5)
             <span className="ml-2 text-xs text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded-full">API Key Included</span>
           </p>
         </div>

@@ -2,7 +2,7 @@
 import { toast } from "@/components/ui/sonner";
 
 // Gemini API configuration
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent";
 const DEFAULT_API_KEY = "AIzaSyB4HPmTjFdA_8bpb5_9eoH824GrLyiEP2k";
 
 // Helper function to get API key from localStorage or use default

@@ -36,7 +36,7 @@ export function ApiKeySetup({ onApiKeySet }: { onApiKeySet: () => void }) {
         </p>
         <div className="bg-green-50 border border-green-100 rounded-md p-3 text-sm text-green-800 mb-4">
           <p className="font-medium">✓ API Key Already Configured</p>
-          <p className="text-xs mt-1">The AI Advisor is ready to use with the default API key.</p>
+          <p className="text-xs mt-1">The AI Advisor is using Gemini 1.5 Flash, ready to answer your financial questions.</p>
         </div>
       </div>
 

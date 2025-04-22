@@ -68,6 +68,18 @@ export function ChatInterface() {
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.error("Error getting AI response:", error);
+      
+      // Add error message to chat
+      const errorMessage: Message = {
+        id: Date.now() + 1,
+        content: error instanceof Error ? 
+          `Sorry, I encountered an error: ${error.message}` : 
+          "Sorry, I encountered an error processing your request.",
+        sender: "ai",
+        timestamp: new Date(),
+      };
+      
+      setMessages((prev) => [...prev, errorMessage]);
       toast.error(error instanceof Error ? error.message : "Failed to get AI response");
     } finally {
       setIsProcessing(false);
