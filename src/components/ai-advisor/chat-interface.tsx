@@ -1,9 +1,12 @@
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ApiKeySetup } from "@/components/ai-advisor/api-key-setup";
+import { generateGeminiResponse, hasGeminiApiKey } from "@/lib/gemini-service";
+import { toast } from "@/components/ui/sonner";
 
 type Message = {
   id: number;
@@ -15,7 +18,7 @@ type Message = {
 const initialMessages: Message[] = [
   {
     id: 1,
-    content: "Hi there! I'm your AI financial advisor. How can I help you today?",
+    content: "Hi there! I'm your AI financial advisor powered by Google Gemini. How can I help you today?",
     sender: "ai",
     timestamp: new Date(),
   },
@@ -24,13 +27,24 @@ const initialMessages: Message[] = [
 export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(hasGeminiApiKey);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleSendMessage = () => {
-    if (!input.trim()) return;
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSendMessage = async () => {
+    if (!input.trim() || isProcessing) return;
 
     // Add user message
     const userMessage: Message = {
-      id: messages.length + 1,
+      id: Date.now(),
       content: input,
       sender: "user",
       timestamp: new Date(),
@@ -38,33 +52,40 @@ export function ChatInterface() {
     
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setIsProcessing(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponses = [
-        "Based on your spending habits, I recommend cutting back on dining out expenses by 15%.",
-        "Looking at your budget, you could increase your savings rate from 10% to 15% without affecting your lifestyle.",
-        "You're doing well with your emergency fund! Consider allocating more toward your retirement savings next.",
-        "I've noticed you're approaching your shopping budget limit for this month. Just a friendly reminder!",
-      ];
-      
-      const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+    try {
+      // Get response from Gemini API
+      const response = await generateGeminiResponse(input);
       
       const aiMessage: Message = {
-        id: messages.length + 2,
-        content: randomResponse,
+        id: Date.now() + 1,
+        content: response,
         sender: "ai",
         timestamp: new Date(),
       };
       
       setMessages((prev) => [...prev, aiMessage]);
-    }, 1000);
+    } catch (error) {
+      console.error("Error getting AI response:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to get AI response");
+    } finally {
+      setIsProcessing(false);
+    }
   };
+
+  const handleApiKeySet = () => {
+    setHasApiKey(true);
+  };
+
+  if (!hasApiKey) {
+    return <ApiKeySetup onApiKeySet={handleApiKeySet} />;
+  }
 
   return (
     <div className="flex flex-col h-full border border-gray-100 rounded-xl overflow-hidden bg-white">
       <div className="p-4 border-b border-gray-100">
-        <h3 className="text-lg font-medium">AI Financial Advisor</h3>
+        <h3 className="text-lg font-medium">AI Financial Advisor (Gemini)</h3>
         <p className="text-sm text-gray-500">Ask any question about your finances</p>
       </div>
       
@@ -97,6 +118,7 @@ export function ChatInterface() {
             )}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       
       <div className="p-4 border-t border-gray-100">
@@ -109,8 +131,13 @@ export function ChatInterface() {
               if (e.key === "Enter") handleSendMessage();
             }}
             className="flex-1"
+            disabled={isProcessing}
           />
-          <Button onClick={handleSendMessage} className="px-3">
+          <Button 
+            onClick={handleSendMessage} 
+            className="px-3"
+            disabled={isProcessing}
+          >
             <Send size={18} />
           </Button>
         </div>
