@@ -3,10 +3,11 @@ import { toast } from "@/components/ui/sonner";
 
 // Gemini API configuration
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
+const DEFAULT_API_KEY = "AIzaSyB4HPmTjFdA_8bpb5_9eoH824GrLyiEP2k";
 
-// Helper function to get API key from localStorage
-export const getGeminiApiKey = (): string | null => {
-  return localStorage.getItem("gemini-api-key");
+// Helper function to get API key from localStorage or use default
+export const getGeminiApiKey = (): string => {
+  return localStorage.getItem("gemini-api-key") || DEFAULT_API_KEY;
 };
 
 // Helper function to save API key to localStorage
@@ -14,19 +15,15 @@ export const saveGeminiApiKey = (apiKey: string): void => {
   localStorage.setItem("gemini-api-key", apiKey);
 };
 
-// Helper function to check if API key exists
+// Helper function to check if API key exists (always returns true now since we have a default)
 export const hasGeminiApiKey = (): boolean => {
-  return !!getGeminiApiKey();
+  return true;
 };
 
 // Function to generate a response using Gemini API
 export const generateGeminiResponse = async (prompt: string): Promise<string> => {
   const apiKey = getGeminiApiKey();
   
-  if (!apiKey) {
-    throw new Error("API key not found. Please set your Gemini API key.");
-  }
-
   try {
     const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
       method: "POST",

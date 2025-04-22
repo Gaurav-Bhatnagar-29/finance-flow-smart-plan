@@ -4,7 +4,6 @@ import { ChatInterface } from "@/components/ai-advisor/chat-interface";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { ApiKeySetup } from "@/components/ai-advisor/api-key-setup";
-import { hasGeminiApiKey } from "@/lib/gemini-service";
 import { Settings } from "lucide-react";
 
 const Advisor = () => {
@@ -15,7 +14,10 @@ const Advisor = () => {
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold mb-1">AI Financial Advisor</h2>
-          <p className="text-gray-500">Get personalized insights and advice about your finances (Powered by Google Gemini)</p>
+          <p className="text-gray-500">
+            Get personalized insights and advice about your finances (Powered by Google Gemini)
+            <span className="ml-2 text-xs text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded-full">API Key Included</span>
+          </p>
         </div>
         <Button 
           variant="outline" 
@@ -23,7 +25,7 @@ const Advisor = () => {
           className="flex items-center gap-2"
         >
           <Settings size={16} />
-          API Key
+          API Settings
         </Button>
       </div>
       
